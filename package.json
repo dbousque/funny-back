@@ -1,0 +1,11 @@
+{
+	"name": "funnywhere",
+	"main": "routes.js",
+	"scripts": {
+		"start": "node routes.js"
+	},
+	"dependencies": {
+		"express": "^4.13.3",
+		"mongoose": "4.7.6"
+	}
+}
