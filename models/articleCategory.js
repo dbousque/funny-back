@@ -11,4 +11,10 @@ var articleCategorySchema = new Schema({
 });
 
 var ArticleCategory = mongoose.model(modelName, articleCategorySchema, modelName);
+ArticleCategory.toFrontFormat = function(obj) {
+	var res = {};
+	res.id = obj._id;
+	res.name = obj.name;
+	return res;
+}
 module.exports = ArticleCategory;

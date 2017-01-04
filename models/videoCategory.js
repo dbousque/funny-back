@@ -11,4 +11,10 @@ var videoCategorySchema = new Schema({
 });
 
 var VideoCategory = mongoose.model(modelName, videoCategorySchema, modelName);
+VideoCategory.toFrontFormat = function(obj) {
+	var res = {};
+	res.id = obj._id;
+	res.name = obj.name;
+	return res;
+};
 module.exports = VideoCategory;

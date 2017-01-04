@@ -3,6 +3,7 @@
 var mongoose = require('mongoose');
 var basic = require('./basicContent.js');
 var Schema = mongoose.Schema;
+var ObjectId = Schema.Types.ObjectId;
 
 var modelName = 'video';
 
@@ -24,4 +25,24 @@ var videoSchema = new Schema({
 });
 
 var Video = mongoose.model(modelName, videoSchema, modelName);
+Video.toFrontFormat = function(obj) {
+	var res = {};
+	res.id = obj._id;
+	res.name = obj.content.name;
+	res.author = obj.content.author;
+	res.categories = obj.categories;
+	res.description = obj.content.description;
+	res.videoUrl = '/video?k=' + obj.content.key;
+	if ('releaseDate' in obj.extra)
+		res.releaseDate = obj.extra.releaseDate;
+	if ('note' in obj.extra)
+		res.note = obj.extra.note;
+	if ('director' in obj.extra)
+		res.director = res.extra.director;
+	if ('studio' in obj.extra)
+		res.studio = res.extra.studio;
+	if ('channel' in obj.extra)
+		res.channel = res.extra.channel;
+	return res;
+}
 module.exports = Video;
