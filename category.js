@@ -7,8 +7,7 @@ var retError = utils.retError;
 var retOk = utils.retOk;
 var throwErrors = utils.throwErrors;
 
-function getCategories(res, type)
-{
+function getCategories(res, type) {
 	if (!(type in contentTypes))
 		return retError(res, 'unknown type');
 	var categoryType = contentTypes[type].cat;
@@ -18,8 +17,7 @@ function getCategories(res, type)
 	}));
 }
 
-function addCategory(res, type, cat_name)
-{
+function addCategory(res, type, cat_name) {
 	if (!(type in contentTypes))
 		return retError(res, 'unknown type');
 	var categoryType = contentTypes[type].cat;
@@ -30,8 +28,7 @@ function addCategory(res, type, cat_name)
 	retOk(res);
 }
 
-function removeCategoryFromContents(cat_id, contents)
-{
+function removeCategoryFromContents(cat_id, contents) {
 	contents.update(
 		{
 			'content.categories': cat_id
@@ -47,8 +44,7 @@ function removeCategoryFromContents(cat_id, contents)
 	);
 }
 
-function removeCategory(res, type, id)
-{
+function removeCategory(res, type, id) {
 	if (!(type in contentTypes))
 		return retError(res, 'unknown type');
 	var categoryType = contentTypes[type].cat;
@@ -66,8 +62,7 @@ function removeCategory(res, type, id)
 	);
 }
 
-function changeCategoryName(res, type, id, newName)
-{
+function changeCategoryName(res, type, id, newName) {
 	var categoryType = contentTypes[type].cat;
 	categoryType.findOne(
 		{

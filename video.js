@@ -16,8 +16,7 @@ var retError = utils.retError;
 var retOk = utils.retOk;
 var saveFileAt = utils.saveFileAt;
 
-function validAddVideoParams(params, cb)
-{
+function validAddVideoParams(params, cb) {
 	allExistingIds(VideoCategory, params.categories, function(allExisting) {
 		if (!allExisting)
 			return cb(false, 'the id of a category sent is not valid');
@@ -31,29 +30,33 @@ function validAddVideoParams(params, cb)
 	});
 }
 
-function addVideo(req, res, params)
-{
+function videoFromParams(params) {
+	var video = {};
+	video.content = {};
+	video.extra = {};
+	video.content.name = params.name;
+	video.content.author = params.author;
+	video.content.description = params.description;
+	video.content.categories = params.categories.map(function(cat) { return ObjectId(cat) });
+	video.content.keywords = params.keywords;
+	if ('releaseDate' in params)
+		video.extra.releaseDate = params.releaseDate;
+	if ('note' in params)
+		video.extra.note = params.note;
+	if ('director' in params)
+		video.extra.director = params.director;
+	if ('studio' in params)
+		video.extra.studio = params.studio;
+	if ('channel' in params)
+		video.extra.channel = ObjectId(params.channel);
+	return video;
+}
+
+function addVideo(req, res, params) {
 	validAddVideoParams(params, function(valid, msg) {
 		if (!valid)
 			return retError(res, msg);
-		var video = {};
-		video.content = {};
-		video.extra = {};
-		video.content.name = params.name;
-		video.content.author = params.author;
-		video.content.description = params.description;
-		video.content.categories = params.categories.map(function(cat) { return ObjectId(cat) });
-		video.content.keywords = params.keywords;
-		if ('releaseDate' in params)
-			video.extra.releaseDate = params.releaseDate;
-		if ('note' in params)
-			video.extra.note = params.note;
-		if ('director' in params)
-			video.extra.director = params.director;
-		if ('studio' in params)
-			video.extra.studio = params.studio;
-		if ('channel' in params)
-			video.extra.channel = ObjectId(params.channel);
+		var video = videoFromParams(params);
 		generateUniqueKey(Video, 'content.key', function(key) {
 			video.content.key = key;
 			video = new Video(video);
@@ -65,6 +68,7 @@ function addVideo(req, res, params)
 					{
 						console.log('error while saving file : ');
 						console.log(err);
+						video.remove(throwErrors);
 						return retError(res, 'could not save video');
 					}
 					retOk(res);
@@ -74,8 +78,7 @@ function addVideo(req, res, params)
 	});
 }
 
-function removeVideo(res, id)
-{
+function removeVideo(res, id) {
 	Video.findOne({_id: id}, throwErrors(function(video) {
 		if (!video)
 			return retError(res, 'no such video');

@@ -68,12 +68,13 @@ function saveFileAt(req, dirname, filename, cb)
 	var form = new formidable.IncomingForm();
 	form.uploadDir = __dirname + dirname;
 	form.parse(req, function(err, fields, files) {
-		cb(true, err);
+		if (err)
+			cb(true, err);
 	});
-	form.on('fileBegin', function(name, file){
+	form.on('fileBegin', function(name, file) {
 		file.path = form.uploadDir + '/' + filename;
 	});
-	form.on('end', function(){
+	form.on('end', function() {
 		cb(false, null);
 	});
 }
