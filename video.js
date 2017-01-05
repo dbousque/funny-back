@@ -60,7 +60,13 @@ function addVideo(req, res, params)
 			video.save(function(err) {
 				if (err)
 					return retError(res, 'invalid parameters');
-				saveFileAt(req, '/content/videos', key, function() {
+				saveFileAt(req, '/content/videos', key, function(error, err) {
+					if (error)
+					{
+						console.log('error while saving file : ');
+						console.log(err);
+						return retError(res, 'could not save video');
+					}
 					retOk(res);
 				});
 			})

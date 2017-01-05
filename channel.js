@@ -18,7 +18,7 @@ function removeChannel(res, id, removeOwnedVideos) {
 	Channel.findOne({_id: id}, throwErrors(function(channel) {
 		if (!channel)
 			return retError(res, 'no such channel');
-		if (removeOwnedVideos === 'true')
+		if (removeOwnedVideos)
 			Video.find({'extra.channel': id}, throwErrors).remove(throwErrors);
 		channel.remove();
 		retOk(res);

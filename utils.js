@@ -67,13 +67,28 @@ function saveFileAt(req, dirname, filename, cb)
 {
 	var form = new formidable.IncomingForm();
 	form.uploadDir = __dirname + dirname;
-	form.parse(req, function(err, fields, files) {});
+	form.parse(req, function(err, fields, files) {
+		cb(true, err);
+	});
 	form.on('fileBegin', function(name, file){
 		file.path = form.uploadDir + '/' + filename;
 	});
 	form.on('end', function(){
-		cb();
+		cb(false, null);
 	});
+}
+
+function getPage(res, collection, page, sort)
+{
+	var pageSize = 25;
+	if (page <= 0)
+		return retError(res, 'invalid page number');
+	var skip = (page - 1) * pageSize;
+	var query = collection.find({}).sort({sort: -1}).skip(skip).limit(pageSize);
+	query.exec(throwErrors(function(docs) {
+		var toSend = docs.map(collection.toFrontFormat);
+		res.send(JSON.stringify(toSend));
+	}));
 }
 
 module.exports = {
@@ -83,5 +98,6 @@ module.exports = {
 	throwErrors:		throwErrors,
 	generateUniqueKey:	generateUniqueKey,
 	allExistingIds:		allExistingIds,
-	saveFileAt:			saveFileAt
+	saveFileAt:			saveFileAt,
+	getPage:			getPage
 }
