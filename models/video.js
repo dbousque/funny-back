@@ -19,7 +19,6 @@ for (var key in basic.extra)
 
 var videoSchema = new Schema({
 	content:		basic.content,
-	categories:		{type: [ObjectId], required: true},
 	extra:			videoExtra,
 	__v:			{type: Number, select: false}
 });

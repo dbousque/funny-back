@@ -3,14 +3,12 @@
 var mongoose = require('mongoose');
 var basic = require('./basicContent.js');
 var Schema = mongoose.Schema;
-var ObjectId = Schema.Types.ObjectId;
 
 var modelName = 'article';
 
 var articleSchema = new Schema({
 	content:		basic.content,
-	categories:		{type: [ObjectId], required: true},
-	text_content:	{type: String, required: true},
+	textContent:	{type: String, required: true},
 	extra:			basic.extra,
 	__v:			{type: Number, select: false}
 });
@@ -23,7 +21,7 @@ Article.toFrontFormat = function(obj) {
 	res.author = obj.content.author;
 	res.categories = obj.categories;
 	res.description = obj.content.description;
-	res.content = obj.text_content;
+	res.content = obj.textContent;
 	if ('releaseDate' in obj.extra)
 		res.releaseDate = obj.extra.releaseDate;
 	if ('note' in obj.extra)
