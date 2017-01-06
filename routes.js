@@ -67,12 +67,19 @@ app.post('/change_category_name', function(req, res) {
 
 /* Videos */
 
+app.get('/video', function(req, res) {
+	var params = req.query;
+	if (!paramsPresent(res, params, ['k']))
+		return ;
+	video.sendVideo(res, params.k);
+})
+
 app.get('/videos', function(req, res) {
 	var params = req.query;
 	var possibleSorts = {
-		date:	'_id',
-		name:	'content.name',
-		author:	'content.author'
+		date:	{'_id': -1},
+		name:	{'content.name': 1},
+		author:	{'content.author': 1}
 	};
 	getContentPage(res, params, Video, possibleSorts);
 });
@@ -105,9 +112,9 @@ app.get('/videos/find_by_category', function(req, res) {
 app.get('/articles', function(req, res) {
 	var params = req.query;
 	var possibleSorts = {
-		date:	'_id',
-		name:	'content.name',
-		author:	'content.author'
+		date:	{'_id': -1},
+		name:	{'content.name': 1},
+		author:	{'content.author': 1}
 	};
 	getContentPage(res, params, Article, possibleSorts);
 });
@@ -140,8 +147,8 @@ app.get('/articles/find_by_category', function(req, res) {
 app.get('/channels', function(req, res) {
 	var params = req.query;
 	var possibleSorts = {
-		date:	'_id',
-		name:	'name',
+		date:	{'_id': -1},
+		name:	{'name': 1},
 	};
 	getContentPage(res, params, Article, possibleSorts);
 });

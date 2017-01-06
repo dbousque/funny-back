@@ -16,6 +16,14 @@ var retError = utils.retError;
 var retOk = utils.retOk;
 var saveFileAt = utils.saveFileAt;
 
+function sendVideo(res, key) {
+	Video.count({'content.key': key}, throwErrors(function(nb) {
+		if (nb !== 1)
+			return retError(res);
+		res.sendFile('content/videos/' + key, {root: __dirname});
+	}));
+}
+
 function validAddVideoParams(params, cb) {
 	allExistingIds(VideoCategory, params.categories, function(allExisting) {
 		if (!allExisting)
@@ -110,6 +118,7 @@ function findByChannel(res, channel) {
 }
 
 module.exports = {
+	sendVideo:		sendVideo,
 	addVideo:		addVideo,
 	removeVideo:	removeVideo,
 	findByCategory:	findByCategory,

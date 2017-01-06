@@ -81,8 +81,7 @@ function getPage(res, collection, page, sort) {
 	if (page <= 0)
 		return retError(res, 'invalid page number');
 	var skip = (page - 1) * pageSize;
-	//console.log(sort);
-	var query = collection.find({}).sort({sort: -1}).skip(skip).limit(pageSize);
+	var query = collection.find({}).sort(sort).skip(skip).limit(pageSize);
 	query.exec(throwErrors(function(docs) {
 		var toSend = docs.map(collection.toFrontFormat);
 		res.send(JSON.stringify(toSend));
