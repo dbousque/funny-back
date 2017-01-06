@@ -22,9 +22,9 @@ Article.toFrontFormat = function(obj) {
 	res.categories = obj.categories;
 	res.description = obj.content.description;
 	res.content = obj.textContent;
-	if ('releaseDate' in obj.extra)
+	if (obj.extra !== undefined && obj.extra.releaseDate !== undefined)
 		res.releaseDate = obj.extra.releaseDate;
-	if ('note' in obj.extra)
+	if (obj.extra !== undefined && obj.extra.note !== undefined)
 		res.note = obj.extra.note;
 	return res;
 }

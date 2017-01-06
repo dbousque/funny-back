@@ -32,16 +32,16 @@ Video.toFrontFormat = function(obj) {
 	res.categories = obj.categories;
 	res.description = obj.content.description;
 	res.videoUrl = '/video?k=' + obj.content.key;
-	if ('releaseDate' in obj.extra)
+	if (obj.extra !== undefined && obj.extra.releaseDate !== undefined)
 		res.releaseDate = obj.extra.releaseDate;
-	if ('note' in obj.extra)
+	if (obj.extra !== undefined && obj.extra.note !== undefined)
 		res.note = obj.extra.note;
-	if ('director' in obj.extra)
-		res.director = res.extra.director;
-	if ('studio' in obj.extra)
-		res.studio = res.extra.studio;
-	if ('channel' in obj.extra)
-		res.channel = res.extra.channel;
+	if (obj.extra !== undefined && obj.extra.director !== undefined)
+		res.director = obj.extra.director;
+	if (obj.extra !== undefined && obj.extra.studio !== undefined)
+		res.studio = obj.extra.studio;
+	if (obj.extra !== undefined && obj.extra.channel !== undefined)
+		res.channel = obj.extra.channel;
 	return res;
 }
 module.exports = Video;

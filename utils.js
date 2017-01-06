@@ -38,8 +38,7 @@ function throwErrors(cb) {
 	return res;
 }
 
-function allExistingIds(collection, ids, cb)
-{
+function allExistingIds(collection, ids, cb) {
 	collection.count(
 		{
 			_id: { $in: ids}
@@ -49,8 +48,7 @@ function allExistingIds(collection, ids, cb)
 	);
 }
 
-function generateUniqueKey(collection, key_loc, cb)
-{
+function generateUniqueKey(collection, key_loc, cb) {
 	var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	var key = "";
 	for (var i = 0; i < 10; i++) {
@@ -63,8 +61,7 @@ function generateUniqueKey(collection, key_loc, cb)
 	}));
 }
 
-function saveFileAt(req, dirname, filename, cb)
-{
+function saveFileAt(req, dirname, filename, cb) {
 	var form = new formidable.IncomingForm();
 	form.uploadDir = __dirname + dirname;
 	form.parse(req, function(err, fields, files) {
@@ -79,12 +76,12 @@ function saveFileAt(req, dirname, filename, cb)
 	});
 }
 
-function getPage(res, collection, page, sort)
-{
+function getPage(res, collection, page, sort) {
 	var pageSize = 25;
 	if (page <= 0)
 		return retError(res, 'invalid page number');
 	var skip = (page - 1) * pageSize;
+	//console.log(sort);
 	var query = collection.find({}).sort({sort: -1}).skip(skip).limit(pageSize);
 	query.exec(throwErrors(function(docs) {
 		var toSend = docs.map(collection.toFrontFormat);
