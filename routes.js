@@ -111,7 +111,7 @@ app.post('/add_video', function(req, res) {
 		if (err)
 			return retError(res, 'unexpected error')
 		for (var field in params) {
-			params[field] = JSON.parlsse(params[field][0]);
+			params[field] = JSON.parse(params[field][0]);
 		}
 		for (var key in files) {
 			files[key] = files[key][0];

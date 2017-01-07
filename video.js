@@ -4,7 +4,6 @@ var Video = require('./models/video.js');
 var VideoCategory = require('./models/videoCategory.js');
 var Channel = require('./models/channel.js');
 var utils = require('./utils.js');
-var formidable = require('formidable');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;

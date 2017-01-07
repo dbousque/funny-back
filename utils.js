@@ -27,7 +27,7 @@ function retOk(res) {
 }
 
 function removeFile(path) {
-	fs.unlink(path);
+	fs.unlink(path, function(err) { });
 }
 
 function retErrorAndRemoveFiles(res, message, files) {
