@@ -11,11 +11,11 @@ var channelSchema = new Schema({
 });
 
 var Channel = mongoose.model(modelName, channelSchema, modelName);
-Channel.toFrontFormat = function(obj) {
+Channel.toFrontFormat = function(obj, options, cb) {
 	var res = {};
 	res.id = obj._id;
 	res.name = obj.name;
-	res.cover = '/channel_cover?id=' + obj._id.toString();
-	return res;
+	res.cover = '/channel_cover?channel=' + obj._id.toString();
+	cb(null, res);
 }
 module.exports = Channel;

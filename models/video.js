@@ -4,6 +4,8 @@ var mongoose = require('mongoose');
 var basic = require('./basicContent.js');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
+var Channel = require('./channel.js');
+var throwErrors = require('../utils.js').throwErrors;
 
 var modelName = 'video';
 
@@ -24,12 +26,12 @@ var videoSchema = new Schema({
 });
 
 var Video = mongoose.model(modelName, videoSchema, modelName);
-Video.toFrontFormat = function(obj) {
+Video.toFrontFormat = function(obj, options, cb) {
 	var res = {};
 	res.id = obj._id;
 	res.name = obj.content.name;
 	res.author = obj.content.author;
-	res.categories = obj.categories;
+	res.categories = obj.content.categories;
 	res.description = obj.content.description;
 	res.videoUrl = '/video?k=' + obj.content.key;
 	if (obj.extra !== undefined && obj.extra.releaseDate !== undefined)
@@ -41,7 +43,23 @@ Video.toFrontFormat = function(obj) {
 	if (obj.extra !== undefined && obj.extra.studio !== undefined)
 		res.studio = obj.extra.studio;
 	if (obj.extra !== undefined && obj.extra.channel !== undefined)
-		res.channel = obj.extra.channel;
-	return res;
+	{
+		if (options && options.fetch_channel)
+		{
+			Channel.findOne({_id: obj.extra.channel}, throwErrors(function(channel) {
+				if (!channel)
+					return cb('no such channel : ' + obj.extra.channel, {});
+				Channel.toFrontFormat(channel, {}, throwErrors(function(frontChannel) {
+					res.channel = frontChannel;
+					cb(null, res);
+				}));
+			}));
+			return ;
+		}
+		else
+			res.channel = obj.extra.channel;
+	}
+	cb(null, res);
 }
+
 module.exports = Video;

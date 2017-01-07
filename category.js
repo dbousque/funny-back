@@ -6,14 +6,18 @@ var contentTypes = require('./config.js').contentTypes;
 var retError = utils.retError;
 var retOk = utils.retOk;
 var throwErrors = utils.throwErrors;
+var makeListToFrontFormat = utils.makeListToFrontFormat;
 
 function getCategories(res, type) {
 	if (!(type in contentTypes))
 		return retError(res, 'unknown type');
 	var categoryType = contentTypes[type].cat;
 	categoryType.find({}, throwErrors(function(categories) {
-		var toSend = categories.map(categoryType.toFrontFormat);
-		res.send(JSON.stringify(toSend));
+		makeListToFrontFormat(categories, categoryType, {}, function(err, toSend) {
+			if (err)
+				return retError(res, err);
+			res.send(JSON.stringify(toSend));
+		});
 	}));
 }
 
@@ -56,7 +60,7 @@ function removeCategory(res, type, id) {
 			if (!category)
 				return retError(res, 'no such category');
 			removeCategoryFromContents(category.id, contents);
-			category.remove();
+			category.remove(throwErrors);
 			retOk(res);
 		})
 	);

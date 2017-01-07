@@ -11,10 +11,10 @@ var articleCategorySchema = new Schema({
 });
 
 var ArticleCategory = mongoose.model(modelName, articleCategorySchema, modelName);
-ArticleCategory.toFrontFormat = function(obj) {
+ArticleCategory.toFrontFormat = function(obj, options, cb) {
 	var res = {};
 	res.id = obj._id;
 	res.name = obj.name;
-	return res;
+	cb(null, res);
 }
 module.exports = ArticleCategory;

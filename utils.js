@@ -76,25 +76,53 @@ function saveFileAt(req, dirname, filename, cb) {
 	});
 }
 
-function getPage(res, collection, page, sort) {
+function getPage(res, collection, query, page, sort, options) {
 	var pageSize = 25;
 	if (page <= 0)
 		return retError(res, 'invalid page number');
 	var skip = (page - 1) * pageSize;
-	var query = collection.find({}).sort(sort).skip(skip).limit(pageSize);
-	query.exec(throwErrors(function(docs) {
-		var toSend = docs.map(collection.toFrontFormat);
-		res.send(JSON.stringify(toSend));
+	var q = collection.find(query).sort(sort).skip(skip).limit(pageSize);
+	q.exec(throwErrors(function(docs) {
+		makeListToFrontFormat(docs, collection, options, function(err, toSend) {
+			if (err)
+				return retError(res, err);
+			if (!options.nb_pages)
+				return res.send(JSON.stringify({contents: toSend}));
+			collection.count(query, throwErrors(function(nb_docs) {
+				toSend = {
+					nb_pages: Math.floor(nb_docs / pageSize) + 1,
+					tot_nb_contents: nb_docs,
+					contents: toSend
+				};
+				res.send(JSON.stringify(toSend));
+			}));
+		});
 	}));
 }
 
+function _makeListToFrontFormat(list, ind, collection, options, acc, cb) {
+	if (ind == list.length)
+		return cb(null, acc);
+	collection.toFrontFormat(list[ind], options, function(err, obj) {
+		if (err)
+			return cb(err, []);
+		acc.push(obj);
+		_makeListToFrontFormat(list, ind + 1, collection, options, acc, cb);
+	});
+}
+
+function makeListToFrontFormat(list, collection, options, cb) {
+	_makeListToFrontFormat(list, 0, collection, options, [], cb);
+}
+
 module.exports = {
-	paramsPresent:		paramsPresent,
-	retError:			retError,
-	retOk:				retOk,
-	throwErrors:		throwErrors,
-	generateUniqueKey:	generateUniqueKey,
-	allExistingIds:		allExistingIds,
-	saveFileAt:			saveFileAt,
-	getPage:			getPage
+	paramsPresent:			paramsPresent,
+	retError:				retError,
+	retOk:					retOk,
+	throwErrors:			throwErrors,
+	generateUniqueKey:		generateUniqueKey,
+	allExistingIds:			allExistingIds,
+	saveFileAt:				saveFileAt,
+	getPage:				getPage,
+	makeListToFrontFormat:	makeListToFrontFormat
 }

@@ -60,19 +60,7 @@ function removeArticle(res, id) {
 	}))
 }
 
-function findByCategory(res, category) {
-	ArticleCategory.count({_id: category}, throwErrors(function(count) {
-		if (count != 1)
-			return retError(res, 'unknown category');
-		Article.find({'content.categories': category}, throwErrors(function(articles) {
-			var toSend = articles.map(Article.toFrontFormat);
-			res.send(JSON.stringify(toSend));
-		}));
-	}));
-}
-
 module.exports = {
 	addArticle:		addArticle,
-	removeArticle:	removeArticle,
-	findByCategory:	findByCategory
+	removeArticle:	removeArticle
 }

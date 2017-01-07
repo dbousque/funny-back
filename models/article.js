@@ -14,18 +14,18 @@ var articleSchema = new Schema({
 });
 
 var Article = mongoose.model(modelName, articleSchema, modelName);
-Article.toFrontFormat = function(obj) {
+Article.toFrontFormat = function(obj, options, cb) {
 	var res = {};
 	res.id = obj._id;
 	res.name = obj.content.name;
 	res.author = obj.content.author;
-	res.categories = obj.categories;
+	res.categories = obj.content.categories;
 	res.description = obj.content.description;
 	res.content = obj.textContent;
 	if (obj.extra !== undefined && obj.extra.releaseDate !== undefined)
 		res.releaseDate = obj.extra.releaseDate;
 	if (obj.extra !== undefined && obj.extra.note !== undefined)
 		res.note = obj.extra.note;
-	return res;
+	cb(null, res);
 }
 module.exports = Article;

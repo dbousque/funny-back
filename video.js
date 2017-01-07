@@ -90,37 +90,13 @@ function removeVideo(res, id) {
 	Video.findOne({_id: id}, throwErrors(function(video) {
 		if (!video)
 			return retError(res, 'no such video');
-		video.remove();
+		video.remove(throwErrors);
 		retOk(res);
 	}))
-}
-
-function findByCategory(res, category) {
-	VideoCategory.count({_id: category}, throwErrors(function(count) {
-		if (count != 1)
-			return retError(res, 'unknown category');
-		Video.find({'content.categories': category}, throwErrors(function(videos) {
-			var toSend = videos.map(Video.toFrontFormat);
-			res.send(JSON.stringify(toSend));
-		}));
-	}));
-}
-
-function findByChannel(res, channel) {
-	Channel.count({_id: channel}, throwErrors(function(count) {
-		if (count != 1)
-			return retError(res, 'unknown channel');
-		Video.find({'extra.channel': channel}, throwErrors(function(videos) {
-			var toSend = videos.map(Video.toFrontFormat);
-			res.send(JSON.stringify(toSend));
-		}));
-	}));
 }
 
 module.exports = {
 	sendVideo:		sendVideo,
 	addVideo:		addVideo,
-	removeVideo:	removeVideo,
-	findByCategory:	findByCategory,
-	findByChannel:	findByChannel
+	removeVideo:	removeVideo
 }
