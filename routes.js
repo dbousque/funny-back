@@ -106,7 +106,7 @@ app.post('/videos', function(req, res) {
 
 app.post('/add_video', function(req, res) {
 	var params = req.body;
-	var fields = ['name', 'author', 'description', 'categories', 'keywords', 'files[]'];
+	var fields = ['name', 'author', 'description', 'categories', 'keywords'];
 	if (!paramsPresent(res, params, fields))
 		return ;
 	video.addVideo(req, res, params);
