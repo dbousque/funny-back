@@ -1,5 +1,6 @@
 
 
+var fs = require('fs');
 var fatalError = require('./config.js').fatalError;
 
 function paramsPresent(res, params, expected)
@@ -25,10 +26,21 @@ function retOk(res) {
 	res.send(JSON.stringify(toSend));
 }
 
+function removeFile(path) {
+	fs.unlink(path);
+}
+
+function retErrorAndRemoveFiles(res, message, files) {
+	for (var key in files) {
+		removeFile(files[key].path);
+	}
+	retError(res, message);
+}
+
 function throwErrors(cb) {
 	var res = function(err) {
 		if (err)
-			fatalError(err);
+			return fatalError(err);
 		if (cb)
 		{
 			var args = Array.prototype.splice.call(arguments, 1);
@@ -61,18 +73,11 @@ function generateUniqueKey(collection, key_loc, cb) {
 	}));
 }
 
-function saveFileAt(req, dirname, filename, cb) {
-	var form = new formidable.IncomingForm();
-	form.uploadDir = __dirname + dirname;
-	form.parse(req, function(err, fields, files) {
+function moveFileAt(file, dirname, filename, cb) {
+	fs.rename(file.path, dirname + '/' + filename, function(err) {
 		if (err)
-			cb(true, err);
-	});
-	form.on('fileBegin', function(name, file) {
-		file.path = form.uploadDir + '/' + filename;
-	});
-	form.on('end', function() {
-		cb(false, null);
+			return cb(true, err);
+		cb(false, err);
 	});
 }
 
@@ -119,10 +124,12 @@ module.exports = {
 	paramsPresent:			paramsPresent,
 	retError:				retError,
 	retOk:					retOk,
+	retErrorAndRemoveFiles:	retErrorAndRemoveFiles,
+	removeFile:				removeFile,
 	throwErrors:			throwErrors,
 	generateUniqueKey:		generateUniqueKey,
 	allExistingIds:			allExistingIds,
-	saveFileAt:				saveFileAt,
+	moveFileAt:				moveFileAt,
 	getPage:				getPage,
 	makeListToFrontFormat:	makeListToFrontFormat
 }

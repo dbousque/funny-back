@@ -8,6 +8,7 @@
 		"express": "^4.13.3",
 		"mongoose": "4.7.6",
 		"body-parser": "1.15.2",
-		"formidable": "1.0.17"
+		"formidable": "1.0.17",
+		"multer": "1.2.1"
 	}
 }

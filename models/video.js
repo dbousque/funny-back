@@ -5,7 +5,6 @@ var basic = require('./basicContent.js');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 var Channel = require('./channel.js');
-var throwErrors = require('../utils.js').throwErrors;
 
 var modelName = 'video';
 
@@ -46,14 +45,16 @@ Video.toFrontFormat = function(obj, options, cb) {
 	{
 		if (options && options.fetch_channel)
 		{
-			Channel.findOne({_id: obj.extra.channel}, throwErrors(function(channel) {
-				if (!channel)
+			Channel.findOne({_id: obj.extra.channel}, function(err, channel) {
+				if (err || !channel)
 					return cb('no such channel : ' + obj.extra.channel, {});
-				Channel.toFrontFormat(channel, {}, throwErrors(function(frontChannel) {
+				Channel.toFrontFormat(channel, {}, function(err, frontChannel) {
+					if (err)
+						return cb(err, {});
 					res.channel = frontChannel;
 					cb(null, res);
-				}));
-			}));
+				});
+			});
 			return ;
 		}
 		else

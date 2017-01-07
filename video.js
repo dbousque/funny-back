@@ -14,7 +14,9 @@ var allExistingIds = utils.allExistingIds;
 var throwErrors = utils.throwErrors;
 var retError = utils.retError;
 var retOk = utils.retOk;
-var saveFileAt = utils.saveFileAt;
+var retErrorAndRemoveFiles = utils.retErrorAndRemoveFiles;
+var moveFileAt = utils.moveFileAt;
+var removeFile = utils.removeFile;
 
 function sendVideo(res, key) {
 	Video.count({'content.key': key}, throwErrors(function(nb) {
@@ -60,24 +62,24 @@ function videoFromParams(params) {
 	return video;
 }
 
-function addVideo(req, res, params) {
+function addVideo(res, params, files) {
 	validAddVideoParams(params, function(valid, msg) {
 		if (!valid)
-			return retError(res, msg);
+			return retErrorAndRemoveFiles(res, msg, files);
 		var video = videoFromParams(params);
 		generateUniqueKey(Video, 'content.key', function(key) {
 			video.content.key = key;
 			video = new Video(video);
 			video.save(function(err) {
 				if (err)
-					return retError(res, 'invalid parameters');
-				saveFileAt(req, '/content/videos', key, function(error, err) {
+					return retErrorAndRemoveFiles(res, 'invalid parameters', files);
+				moveFileAt(files.video, __dirname + '/content/videos', key, function(error, err) {
 					if (error)
 					{
-						console.log('error while saving file : ');
+						console.log('error while moving file : ');
 						console.log(err);
 						video.remove(throwErrors);
-						return retError(res, 'could not save video');
+						return retErrorAndRemoveFiles(res, 'could not save video', files);
 					}
 					retOk(res);
 				});
@@ -90,6 +92,7 @@ function removeVideo(res, id) {
 	Video.findOne({_id: id}, throwErrors(function(video) {
 		if (!video)
 			return retError(res, 'no such video');
+		removeFile(__dirname + '/content/videos/' + video.content.key);
 		video.remove(throwErrors);
 		retOk(res);
 	}))

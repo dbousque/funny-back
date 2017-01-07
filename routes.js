@@ -1,6 +1,7 @@
 
 
 var mongoose = require('mongoose');
+var multiparty = require('multiparty');
 var app = require('./app.js');
 var contentTypes = require('./config.js').contentTypes;
 var category = require('./category.js');
@@ -105,11 +106,23 @@ app.post('/videos', function(req, res) {
 });
 
 app.post('/add_video', function(req, res) {
-	var params = req.body;
-	var fields = ['name', 'author', 'description', 'categories', 'keywords'];
-	if (!paramsPresent(res, params, fields))
-		return ;
-	video.addVideo(req, res, params);
+	var form = new multiparty.Form();
+	form.parse(req, function(err, params, files) {
+		if (err)
+			return retError(res, 'unexpected error')
+		for (var field in params) {
+			params[field] = JSON.parlsse(params[field][0]);
+		}
+		for (var key in files) {
+			files[key] = files[key][0];
+		}
+		var fields = ['name', 'author', 'description', 'categories', 'keywords'];
+		if (!paramsPresent(res, params, fields))
+			return ;
+		if (files.video === undefined)
+			return retError(res, 'video missing');
+		video.addVideo(res, params, files);
+	});
 });
 
 app.get('/remove_video', function(req, res) {
@@ -117,13 +130,6 @@ app.get('/remove_video', function(req, res) {
 	if (!paramsPresent(res, params, ['id']))
 		return ;
 	video.removeVideo(res, params.id);
-});
-
-app.get('/videos/find_by_category', function(req, res) {
-	var params = req.query;
-	if (!paramsPresent(res, params, ['category']))
-		return ;
-	video.findByCategory(res, params.category);
 });
 
 
@@ -152,13 +158,6 @@ app.get('/remove_article', function(req, res) {
 	if (!paramsPresent(res, params, ['id']))
 		return ;
 	article.removeArticle(res, params.id);
-});
-
-app.get('/articles/find_by_category', function(req, res) {
-	var params = req.query;
-	if (!paramsPresent(res, params, ['category']))
-		return ;
-	article.findByCategory(res, params.category);
 });
 
 
