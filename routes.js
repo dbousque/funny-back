@@ -82,7 +82,14 @@ app.get('/video', function(req, res) {
 	if (!paramsPresent(res, params, ['k']))
 		return ;
 	video.sendVideo(res, params.k);
-})
+});
+
+app.get('/video_thumbnail', function(req, res) {
+	var params = req.query;
+	if (!paramsPresent(res, params, ['k']))
+		return ;
+	video.sendVideoThumbnail(res, params.k);
+});
 
 app.post('/videos', function(req, res) {
 	var params = req.body;
@@ -119,8 +126,8 @@ app.post('/add_video', function(req, res) {
 		var fields = ['name', 'author', 'description', 'categories', 'keywords'];
 		if (!paramsPresent(res, params, fields))
 			return ;
-		if (files.video === undefined)
-			return retError(res, 'video missing');
+		if (files.video === undefined || files.thumbnail === undefined)
+			return retError(res, 'video or thumbnail missing');
 		video.addVideo(res, params, files);
 	});
 });

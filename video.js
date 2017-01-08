@@ -25,6 +25,14 @@ function sendVideo(res, key) {
 	}));
 }
 
+function sendVideoThumbnail(res, key) {
+	Video.count({'content.key': key}, throwErrors(function(nb) {
+		if (nb !== 1)
+			return retError(res);
+		res.sendFile('content/video_thumbnails/' + key, {root: __dirname});
+	}));
+}
+
 function validAddVideoParams(params, cb) {
 	allExistingIds(VideoCategory, params.categories, function(allExisting) {
 		if (!allExisting)
@@ -61,6 +69,31 @@ function videoFromParams(params) {
 	return video;
 }
 
+function saveVideoContentAndThumbail(res, video, key, files) {
+	var video_dir = __dirname + '/content/videos';
+	moveFileAt(files.video, video_dir, key, function(error, err) {
+		if (error)
+		{
+			console.log('error while moving file : ');
+			console.log(err);
+			video.remove(throwErrors);
+			return retErrorAndRemoveFiles(res, 'could not save video', files);
+		}
+		var thumbnail_dir = __dirname + '/content/video_thumbnails';
+		moveFileAt(files.thumbnail, thumbnail_dir, key, function(error, err) {
+			if (error)
+			{
+				console.log('error while moving file : ');
+				console.log(err);
+				removeFile(video_dir + '/' + key);
+				video.remove(throwErrors);
+				return retErrorAndRemoveFiles(res, 'could not save thumbnail', files);
+			}
+			retOk(res);
+		});
+	});
+}
+
 function addVideo(res, params, files) {
 	validAddVideoParams(params, function(valid, msg) {
 		if (!valid)
@@ -72,16 +105,7 @@ function addVideo(res, params, files) {
 			video.save(function(err) {
 				if (err)
 					return retErrorAndRemoveFiles(res, 'invalid parameters', files);
-				moveFileAt(files.video, __dirname + '/content/videos', key, function(error, err) {
-					if (error)
-					{
-						console.log('error while moving file : ');
-						console.log(err);
-						video.remove(throwErrors);
-						return retErrorAndRemoveFiles(res, 'could not save video', files);
-					}
-					retOk(res);
-				});
+				saveVideoContentAndThumbail(res, video, key, files);
 			})
 		})
 	});
@@ -92,13 +116,15 @@ function removeVideo(res, id) {
 		if (!video)
 			return retError(res, 'no such video');
 		removeFile(__dirname + '/content/videos/' + video.content.key);
+		removeFile(__dirname + '/content/video_thumbnails/' + video.content.key);
 		video.remove(throwErrors);
 		retOk(res);
 	}))
 }
 
 module.exports = {
-	sendVideo:		sendVideo,
-	addVideo:		addVideo,
-	removeVideo:	removeVideo
+	sendVideo:			sendVideo,
+	sendVideoThumbnail:	sendVideoThumbnail,
+	addVideo:			addVideo,
+	removeVideo:		removeVideo
 }

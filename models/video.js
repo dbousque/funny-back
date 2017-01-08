@@ -33,6 +33,7 @@ Video.toFrontFormat = function(obj, options, cb) {
 	res.categories = obj.content.categories;
 	res.description = obj.content.description;
 	res.videoUrl = '/video?k=' + obj.content.key;
+	res.thumbnailUrl = '/video_thumbnail?k=' + obj.content.key;
 	if (obj.extra !== undefined && obj.extra.releaseDate !== undefined)
 		res.releaseDate = obj.extra.releaseDate;
 	if (obj.extra !== undefined && obj.extra.note !== undefined)
