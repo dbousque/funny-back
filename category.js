@@ -5,8 +5,10 @@ var contentTypes = require('./config.js').contentTypes;
 
 var retError = utils.retError;
 var retOk = utils.retOk;
+var retSendObject = utils.retSendObject;
 var throwErrors = utils.throwErrors;
 var makeListToFrontFormat = utils.makeListToFrontFormat;
+var log = require('./log.js');
 
 function getCategories(res, type) {
 	if (!(type in contentTypes))
@@ -16,7 +18,7 @@ function getCategories(res, type) {
 		makeListToFrontFormat(categories, categoryType, {}, function(err, toSend) {
 			if (err)
 				return retError(res, err);
-			res.send(JSON.stringify(toSend));
+			retSendObject(res, toSend);
 		});
 	}));
 }

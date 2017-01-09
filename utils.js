@@ -1,7 +1,10 @@
 
 
 var fs = require('fs');
+var multiparty = require('multiparty');
 var fatalError = require('./config.js').fatalError;
+var recordError = require('./errors.js').recordError;
+var log = require('./log.js');
 
 function paramsPresent(res, params, expected)
 {
@@ -15,28 +18,6 @@ function paramsPresent(res, params, expected)
 	return (true);
 }
 
-function retError(res, message) {
-	console.log('user error : ' + message);
-	var toSend = {status: 'error', msg: message};
-	res.send(JSON.stringify(toSend));
-}
-
-function retOk(res) {
-	var toSend = {status: 'ok', msg: 'ok'};
-	res.send(JSON.stringify(toSend));
-}
-
-function removeFile(path) {
-	fs.unlink(path, function(err) { });
-}
-
-function retErrorAndRemoveFiles(res, message, files) {
-	for (var key in files) {
-		removeFile(files[key].path);
-	}
-	retError(res, message);
-}
-
 function throwErrors(cb) {
 	var res = function(err) {
 		if (err)
@@ -48,6 +29,58 @@ function throwErrors(cb) {
 		}
 	}
 	return res;
+}
+
+function retError(res, message, stackOffset) {
+	var offset = 1;
+	if (stackOffset !== undefined)
+		offset += stackOffset;
+	log.error('user error : ' + message, 'usererror', offset);
+	var toSend = {status: 'error', msg: message};
+	res.send(JSON.stringify(toSend));
+}
+
+function retBackError(res, err, stackOffset) {
+	var offset = 1;
+	if (stackOffset !== undefined)
+		offset += stackOffset;
+	log.error(err, 'backerror', offset);
+	var toSend = {status: 'error', msg: 'unexpected back error'};
+	res.send(JSON.stringify(toSend));
+}
+
+function retOk(res) {
+	log.log('responded ok', 1);
+	var toSend = {status: 'ok', msg: 'ok'};
+	res.send(JSON.stringify(toSend));
+}
+
+function retSendObject(res, obj) {
+	log.log('sending object', 1);
+	res.send(JSON.stringify(obj));
+}
+
+function retSendFile(res, path, options) {
+	log.log('sending file \'' + path + '\'', 1);
+	res.sendFile(path, options);
+}
+
+function retErrorAndRemoveFiles(res, message, files) {
+	for (var key in files) {
+		removeFile(files[key].path);
+	}
+	retError(res, message, 1);
+}
+
+function retBackErrorAndRemoveFiles(res, message, files) {
+	for (var key in files) {
+		removeFile(files[key].path);
+	}
+	retBackError(res, message, 1);
+}
+
+function removeFile(path) {
+	fs.unlink(path, function(err) { });
 }
 
 function allExistingIds(collection, ids, cb) {
@@ -92,14 +125,14 @@ function getPage(res, collection, query, page, sort, options) {
 			if (err)
 				return retError(res, err);
 			if (!options.nb_pages)
-				return res.send(JSON.stringify({contents: toSend}));
+				return retSendObject(res, {contents: toSend});
 			collection.count(query, throwErrors(function(nb_docs) {
 				toSend = {
 					nb_pages: Math.floor(nb_docs / pageSize) + 1,
 					tot_nb_contents: nb_docs,
 					contents: toSend
 				};
-				res.send(JSON.stringify(toSend));
+				retSendObject(res, toSend);
 			}));
 		});
 	}));
@@ -120,16 +153,36 @@ function makeListToFrontFormat(list, collection, options, cb) {
 	_makeListToFrontFormat(list, 0, collection, options, [], cb);
 }
 
+function parseQueryWithFiles(req, cb) {
+	var form = new multiparty.Form();
+	form.parse(req, function(err, params, files) {
+		if (err)
+			return cb('unexpected error', {}, {});
+		for (var field in params) {
+			params[field] = JSON.parse(params[field][0]);
+		}
+		for (var key in files) {
+			files[key] = files[key][0];
+		}
+		cb(null, params, files);
+	});
+}
+
 module.exports = {
-	paramsPresent:			paramsPresent,
-	retError:				retError,
-	retOk:					retOk,
-	retErrorAndRemoveFiles:	retErrorAndRemoveFiles,
-	removeFile:				removeFile,
-	throwErrors:			throwErrors,
-	generateUniqueKey:		generateUniqueKey,
-	allExistingIds:			allExistingIds,
-	moveFileAt:				moveFileAt,
-	getPage:				getPage,
-	makeListToFrontFormat:	makeListToFrontFormat
+	paramsPresent:				paramsPresent,
+	retError:					retError,
+	retBackError:				retBackError,
+	retOk:						retOk,
+	retSendObject:				retSendObject,
+	retSendFile:				retSendFile,
+	retErrorAndRemoveFiles:		retErrorAndRemoveFiles,
+	retBackErrorAndRemoveFiles:	retBackErrorAndRemoveFiles,
+	removeFile:					removeFile,
+	throwErrors:				throwErrors,
+	generateUniqueKey:			generateUniqueKey,
+	allExistingIds:				allExistingIds,
+	moveFileAt:					moveFileAt,
+	getPage:					getPage,
+	makeListToFrontFormat:		makeListToFrontFormat,
+	parseQueryWithFiles:		parseQueryWithFiles
 }

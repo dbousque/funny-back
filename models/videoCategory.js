@@ -17,4 +17,5 @@ VideoCategory.toFrontFormat = function(obj, options, cb) {
 	res.name = obj.name;
 	cb(null, res);
 };
+
 module.exports = VideoCategory;

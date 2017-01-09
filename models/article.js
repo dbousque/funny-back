@@ -28,4 +28,5 @@ Article.toFrontFormat = function(obj, options, cb) {
 		res.note = obj.extra.note;
 	cb(null, res);
 }
+
 module.exports = Article;

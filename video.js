@@ -4,6 +4,7 @@ var Video = require('./models/video.js');
 var VideoCategory = require('./models/videoCategory.js');
 var Channel = require('./models/channel.js');
 var utils = require('./utils.js');
+var log = require('./log.js');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
@@ -13,6 +14,7 @@ var allExistingIds = utils.allExistingIds;
 var throwErrors = utils.throwErrors;
 var retError = utils.retError;
 var retOk = utils.retOk;
+var retSendFile = utils.retSendFile;
 var retErrorAndRemoveFiles = utils.retErrorAndRemoveFiles;
 var moveFileAt = utils.moveFileAt;
 var removeFile = utils.removeFile;
@@ -21,7 +23,7 @@ function sendVideo(res, key) {
 	Video.count({'content.key': key}, throwErrors(function(nb) {
 		if (nb !== 1)
 			return retError(res);
-		res.sendFile('content/videos/' + key, {root: __dirname});
+		retSendFile(res, 'content/videos/' + key, {root: __dirname});
 	}));
 }
 
@@ -29,7 +31,7 @@ function sendVideoThumbnail(res, key) {
 	Video.count({'content.key': key}, throwErrors(function(nb) {
 		if (nb !== 1)
 			return retError(res);
-		res.sendFile('content/video_thumbnails/' + key, {root: __dirname});
+		retSendFile(res, 'content/video_thumbnails/' + key, {root: __dirname});
 	}));
 }
 
@@ -74,20 +76,16 @@ function saveVideoContentAndThumbail(res, video, key, files) {
 	moveFileAt(files.video, video_dir, key, function(error, err) {
 		if (error)
 		{
-			console.log('error while moving file : ');
-			console.log(err);
 			video.remove(throwErrors);
-			return retErrorAndRemoveFiles(res, 'could not save video', files);
+			return retBackErrorAndRemoveFiles(res, 'could not move video', files);
 		}
 		var thumbnail_dir = __dirname + '/content/video_thumbnails';
 		moveFileAt(files.thumbnail, thumbnail_dir, key, function(error, err) {
 			if (error)
 			{
-				console.log('error while moving file : ');
-				console.log(err);
 				removeFile(video_dir + '/' + key);
 				video.remove(throwErrors);
-				return retErrorAndRemoveFiles(res, 'could not save thumbnail', files);
+				return retBackErrorAndRemoveFiles(res, 'could not move thumbnail', files);
 			}
 			retOk(res);
 		});

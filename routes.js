@@ -1,7 +1,6 @@
 
 
 var mongoose = require('mongoose');
-var multiparty = require('multiparty');
 var app = require('./app.js');
 var contentTypes = require('./config.js').contentTypes;
 var category = require('./category.js');
@@ -16,6 +15,7 @@ var utils = require('./utils.js');
 var paramsPresent = utils.paramsPresent;
 var retError = utils.retError;
 var getPage = utils.getPage;
+var parseQueryWithFiles = utils.parseQueryWithFiles;
 
 
 function getContentPage(res, params, collection, query, possibleSorts, options) {
@@ -113,16 +113,9 @@ app.post('/videos', function(req, res) {
 });
 
 app.post('/add_video', function(req, res) {
-	var form = new multiparty.Form();
-	form.parse(req, function(err, params, files) {
+	parseQueryWithFiles(req, function(err, params, files) {
 		if (err)
-			return retError(res, 'unexpected error')
-		for (var field in params) {
-			params[field] = JSON.parse(params[field][0]);
-		}
-		for (var key in files) {
-			files[key] = files[key][0];
-		}
+			return retError(res, err);
 		var fields = ['name', 'author', 'description', 'categories', 'keywords'];
 		if (!paramsPresent(res, params, fields))
 			return ;
@@ -172,9 +165,9 @@ app.get('/remove_article', function(req, res) {
 
 app.get('/channel_cover', function(req, res) {
 	var params = req.query;
-	if (!paramsPresent(res, params, ['channel']))
+	if (!paramsPresent(res, params, ['k']))
 		return ;
-	channel.sendChannelCover(res, params.channel);
+	channel.sendChannelCover(res, params.k);
 })
 
 app.post('/channels', function(req, res) {
@@ -187,21 +180,19 @@ app.post('/channels', function(req, res) {
 });
 
 app.post('/add_channel', function(req, res) {
-	var params = req.body;
-	if (!paramsPresent(res, params, ['name']))
-		return ;
-	var hasCover = false;
-	if ('cover' in params)
-		hasCover = true;
-	channel.addChannel(res, req, params.name, hasCover);
+	parseQueryWithFiles(req, function(err, params, files) {
+		if (!paramsPresent(res, params, ['name', 'categories']))
+			return ;
+		channel.addChannel(res, params.name, params.categories, files);
+	});
 });
 
-app.get('/remove_channel', function(req, res) {
-	var params = req.query;
+app.post('/remove_channel', function(req, res) {
+	var params = req.body;
 	if (!paramsPresent(res, params, ['id', 'removeOwnedVideos']))
 		return ;
-	if (params.removeOwnedVideos !== 'true' && params.removeOwnedVideos !== 'false')
+	if (params.removeOwnedVideos !== true && params.removeOwnedVideos !== false)
 		return retError(res, 'invalid boolean value for removeOwnedVideos');
-	params.removeOwnedVideos = (params.removeOwnedVideos === 'true');
+	params.removeOwnedVideos = params.removeOwnedVideos;
 	channel.removeChannel(res, params.id, params.removeOwnedVideos);
 });

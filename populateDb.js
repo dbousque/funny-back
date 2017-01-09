@@ -16,7 +16,23 @@ var resChannels = {};
 var resVideoCategories = {};
 var resArticleCategories = {};
 
-var channels = ['Ma Chaine de ouf', 'Le foot c\'est cool', 'Allez l\'OM'];
+var channels = [
+	{
+		name: 'Ma Chaine de ouf',
+		categories: ['gaming', 'tourism'],
+		key: 'aaaaaa'
+	},
+	{
+		name: 'Le foot c\'est cool',
+		categories: ['tourism'],
+		key: 'bbbbbb'
+	},
+	{
+		name: 'Allez l\'OM',
+		categories: ['documentary'],
+		key: 'cccccc'
+	}
+];
 
 var counter = 0;
 
@@ -28,7 +44,7 @@ var videos = {
 			description: 'descr1',
 			keywords: ['danse', 'emeraude'],
 			key: 'aaaaaa',
-			channel: channels[0]
+			channel: channels[0].name
 		},
 		{
 			name: 'Video2 - Gaming',
@@ -36,7 +52,7 @@ var videos = {
 			description: 'descr2',
 			keywords: ['foot', 'ruby'],
 			key: 'bbbbbb',
-			channel: channels[1]
+			channel: channels[1].name
 		},
 		{
 			name: 'Video3 - Gaming',
@@ -44,7 +60,7 @@ var videos = {
 			description: 'descr3',
 			keywords: ['danse', 'diamant'],
 			key: 'cccccc',
-			channel: channels[0]
+			channel: channels[0].name
 		},
 		{
 			name: 'Video4 - Gaming',
@@ -52,7 +68,7 @@ var videos = {
 			description: 'descr4',
 			keywords: ['danse', 'quartz'],
 			key: 'dddddd',
-			channel: channels[1]
+			channel: channels[1].name
 		}
 	],
 	documentary: [
@@ -62,7 +78,7 @@ var videos = {
 			description: 'descr5',
 			keywords: ['foot', 'opale'],
 			key: 'eeeeee',
-			channel: channels[2]
+			channel: channels[2].name
 		},
 		{
 			name: 'Video6 - Documentary',
@@ -70,7 +86,7 @@ var videos = {
 			description: 'descr6',
 			keywords: ['philosophie', 'saphir'],
 			key: 'ffffff',
-			channel: channels[0]
+			channel: channels[0].name
 		}
 	],
 	tourism: [
@@ -80,7 +96,7 @@ var videos = {
 			description: 'descr7',
 			keywords: ['calisse', 'agate'],
 			key: 'gggggg',
-			channel: channels[2]
+			channel: channels[2].name
 		},
 		{
 			name: 'Video8 - Tourism',
@@ -88,7 +104,7 @@ var videos = {
 			description: 'descr8',
 			keywords: ['char', 'jade'],
 			key: 'hhhhhh',
-			channel: channels[0]
+			channel: channels[0].name
 		},
 		{
 			name: 'Video9 - Tourism',
@@ -96,7 +112,7 @@ var videos = {
 			description: 'descr9',
 			keywords: ['animaux', 'ambre'],
 			key: 'iiiiii',
-			channel: channels[1]
+			channel: channels[1].name
 		}
 	]
 };
@@ -212,10 +228,12 @@ function populateChannels(channels) {
 		return ;
 	}
 	var obj = {};
-	obj.name = channels[0];
+	obj.name = channels[0].name;
+	obj.categories = channels[0].categories.map(function(cat) { return resVideoCategories[cat] });
+	obj.key = channels[0].key;
 	obj = new Channel(obj);
 	obj.save(function(err, doc) {
-		resChannels[channels[0]] = doc._id;
+		resChannels[channels[0].name] = doc._id;
 		populateChannels(channels.slice(1, channels.length));
 	})
 }

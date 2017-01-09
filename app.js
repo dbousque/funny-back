@@ -3,6 +3,7 @@
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var express = require('express');
+var log = require('./log.js');
 var app = express();
 
 // to prevent irrelevant depreciation warning
@@ -23,7 +24,7 @@ app.use(function(req, res, next) {
 });
 
 app.listen(3000, function () {
-	console.log('listening on port 3000');
+	log.log('listening on port 3000');
 })
 
 module.exports = app;
