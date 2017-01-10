@@ -18,11 +18,12 @@ var retSendFile = utils.retSendFile;
 var retErrorAndRemoveFiles = utils.retErrorAndRemoveFiles;
 var moveFileAt = utils.moveFileAt;
 var removeFile = utils.removeFile;
+var validLanguageCode = utils.validLanguageCode;
 
 function sendVideo(res, key) {
 	Video.count({'content.key': key}, throwErrors(function(nb) {
 		if (nb !== 1)
-			return retError(res);
+			return retError(res, 'invalid video key');
 		retSendFile(res, 'content/videos/' + key, {root: __dirname});
 	}));
 }
@@ -30,7 +31,7 @@ function sendVideo(res, key) {
 function sendVideoThumbnail(res, key) {
 	Video.count({'content.key': key}, throwErrors(function(nb) {
 		if (nb !== 1)
-			return retError(res);
+			return retError(res, 'invalid video key');
 		retSendFile(res, 'content/video_thumbnails/' + key, {root: __dirname});
 	}));
 }
@@ -39,6 +40,8 @@ function validAddVideoParams(params, cb) {
 	allExistingIds(VideoCategory, params.categories, function(allExisting) {
 		if (!allExisting)
 			return cb(false, 'the id of a category sent is not valid');
+		if (!validLanguageCode(params.lang))
+			return cb(false, 'invalid language code : ' + params.lang);
 		if (!('channel' in params))
 			return cb(true, 'ok');
 		Channel.findOne({_id: params.channel}, throwErrors(function(channel) {
@@ -58,6 +61,7 @@ function videoFromParams(params) {
 	video.content.description = params.description;
 	video.content.categories = params.categories.map(function(cat) { return ObjectId(cat) });
 	video.content.keywords = params.keywords;
+	video.content.lang = params.lang;
 	if ('releaseDate' in params)
 		video.extra.releaseDate = params.releaseDate;
 	if ('note' in params)

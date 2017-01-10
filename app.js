@@ -23,8 +23,11 @@ app.use(function(req, res, next) {
 	next();
 });
 
-app.listen(3000, function () {
+var server = app.listen(3000, function () {
 	log.log('listening on port 3000');
-})
+});
 
-module.exports = app;
+module.exports = {
+	app:	app,
+	server:	server
+}

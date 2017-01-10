@@ -1,12 +1,13 @@
 
 
 var mongoose = require('mongoose');
-var app = require('./app.js');
+var app = require('./app.js').app;
 var contentTypes = require('./config.js').contentTypes;
 var category = require('./category.js');
 var video = require('./video.js');
 var article = require('./article.js');
 var channel = require('./channel.js');
+var userEvent = require('./userEvent.js');
 var Video = require('./models/video.js');
 var Article = require('./models/article.js');
 var Channel = require('./models/channel.js');
@@ -16,6 +17,7 @@ var paramsPresent = utils.paramsPresent;
 var retError = utils.retError;
 var getPage = utils.getPage;
 var parseQueryWithFiles = utils.parseQueryWithFiles;
+var makeRoute = utils.makeRoute;
 
 
 function getContentPage(res, params, collection, query, possibleSorts, options) {
@@ -46,28 +48,28 @@ function getContentPage(res, params, collection, query, possibleSorts, options) 
 
 /* Categories */
 
-app.get('/categories', function(req, res) {
+makeRoute('get', '/categories', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['type']))
 		return ;
 	category.getCategories(res, params.type);
 });
 
-app.post('/add_category', function(req, res) {
+makeRoute('post', '/add_category', function(req, res) {
 	var params = req.body;
 	if (!paramsPresent(res, params, ['type', 'name']))
 		return ;
 	category.addCategory(res, params.type, params.name);
 });
 
-app.get('/remove_category', function(req, res) {
+makeRoute('get', '/remove_category', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['id', 'type']))
 		return ;
 	category.removeCategory(res, params.type, params.id);
 });
 
-app.post('/change_category_name', function(req, res) {
+makeRoute('post', '/change_category_name', function(req, res) {
 	var params = req.body;
 	if (!paramsPresent(res, params, ['id', 'type', 'newName']))
 		return ;
@@ -77,21 +79,21 @@ app.post('/change_category_name', function(req, res) {
 
 /* Videos */
 
-app.get('/video', function(req, res) {
+makeRoute('get', '/video', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['k']))
 		return ;
 	video.sendVideo(res, params.k);
 });
 
-app.get('/video_thumbnail', function(req, res) {
+makeRoute('get', '/video_thumbnail', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['k']))
 		return ;
 	video.sendVideoThumbnail(res, params.k);
 });
 
-app.post('/videos', function(req, res) {
+makeRoute('post', '/videos', function(req, res) {
 	var params = req.body;
 	var possibleSorts = {
 		date:	{'_id': -1},
@@ -112,11 +114,11 @@ app.post('/videos', function(req, res) {
 	getContentPage(res, params, Video, query, possibleSorts, options);
 });
 
-app.post('/add_video', function(req, res) {
+makeRoute('post', '/add_video', function(req, res) {
 	parseQueryWithFiles(req, function(err, params, files) {
 		if (err)
 			return retError(res, err);
-		var fields = ['name', 'author', 'description', 'categories', 'keywords'];
+		var fields = ['name', 'author', 'description', 'categories', 'keywords', 'lang'];
 		if (!paramsPresent(res, params, fields))
 			return ;
 		if (files.video === undefined || files.thumbnail === undefined)
@@ -125,7 +127,7 @@ app.post('/add_video', function(req, res) {
 	});
 });
 
-app.get('/remove_video', function(req, res) {
+makeRoute('get', '/remove_video', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['id']))
 		return ;
@@ -135,7 +137,7 @@ app.get('/remove_video', function(req, res) {
 
 /* Articles */
 
-app.post('/articles', function(req, res) {
+makeRoute('post', '/articles', function(req, res) {
 	var params = req.body;
 	var possibleSorts = {
 		date:	{'_id': -1},
@@ -145,15 +147,15 @@ app.post('/articles', function(req, res) {
 	getContentPage(res, params, Article, {}, possibleSorts, {});
 });
 
-app.post('/add_article', function(req, res) {
+makeRoute('post', '/add_article', function(req, res) {
 	var params = req.body;
-	var fields = ['name', 'author', 'description', 'categories', 'keywords', 'textContent'];
+	var fields = ['name', 'author', 'description', 'categories', 'keywords', 'textContent', 'lang'];
 	if (!paramsPresent(res, params, fields))
 		return ;
 	article.addArticle(res, params);
 });
 
-app.get('/remove_article', function(req, res) {
+makeRoute('get', '/remove_article', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['id']))
 		return ;
@@ -163,14 +165,14 @@ app.get('/remove_article', function(req, res) {
 
 /* Channels */
 
-app.get('/channel_cover', function(req, res) {
+makeRoute('get', '/channel_cover', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['k']))
 		return ;
 	channel.sendChannelCover(res, params.k);
-})
+});
 
-app.post('/channels', function(req, res) {
+makeRoute('post', '/channels', function(req, res) {
 	var params = req.body;
 	var possibleSorts = {
 		date:	{'_id': -1},
@@ -179,7 +181,7 @@ app.post('/channels', function(req, res) {
 	getContentPage(res, params, Channel, {}, possibleSorts, {});
 });
 
-app.post('/add_channel', function(req, res) {
+makeRoute('post', '/add_channel', function(req, res) {
 	parseQueryWithFiles(req, function(err, params, files) {
 		if (!paramsPresent(res, params, ['name', 'categories']))
 			return ;
@@ -187,12 +189,23 @@ app.post('/add_channel', function(req, res) {
 	});
 });
 
-app.post('/remove_channel', function(req, res) {
+makeRoute('post', '/remove_channel', function(req, res) {
 	var params = req.body;
 	if (!paramsPresent(res, params, ['id', 'removeOwnedVideos']))
 		return ;
 	if (params.removeOwnedVideos !== true && params.removeOwnedVideos !== false)
 		return retError(res, 'invalid boolean value for removeOwnedVideos');
-	params.removeOwnedVideos = params.removeOwnedVideos;
 	channel.removeChannel(res, params.id, params.removeOwnedVideos);
+});
+
+
+/* UserEvents */
+
+makeRoute('post', '/register_event', function(req, res) {
+	var params = req.body;
+	if (!paramsPresent(res, params, ['event']))
+		return ;
+	if (params.event === null || typeof params.event !== 'object')
+		return retError(res, 'invalid event param');
+	userEvent.addUserEvent(res, params.event);
 });

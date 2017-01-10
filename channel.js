@@ -54,6 +54,7 @@ function removeChannelFromVideos(channel_id) {
 	Video.update(
 		{'extra.channel': channel_id},
 		{$unset: {'extra.channel': 1 }},
+		{multi: true},
 		throwErrors
 	);
 }

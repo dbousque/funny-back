@@ -5,6 +5,23 @@ var multiparty = require('multiparty');
 var fatalError = require('./config.js').fatalError;
 var recordError = require('./errors.js').recordError;
 var log = require('./log.js');
+var app = require('./app.js').app;
+var langs = require('./langs.js');
+
+function makeRoute(method, route, f) {
+	if (method != 'get' && method != 'post')
+		throw new Error('invalid method');
+	// to prevent express from catching errors
+	var tmp = function(req, res) {
+		res.startTime = Date.now();
+		log.log('called route \'' + route + '\'');
+		setTimeout(function() { f(req, res) }, 0);
+	}
+	if (method === 'get')
+		app.get(route, tmp);
+	else if (method === 'post')
+		app.post(route, tmp);
+}
 
 function paramsPresent(res, params, expected)
 {
@@ -50,18 +67,18 @@ function retBackError(res, err, stackOffset) {
 }
 
 function retOk(res) {
-	log.log('responded ok', 1);
+	log.log('responding ok [' + (Date.now() - res.startTime) + 'ms]', 1);
 	var toSend = {status: 'ok', msg: 'ok'};
 	res.send(JSON.stringify(toSend));
 }
 
 function retSendObject(res, obj) {
-	log.log('sending object', 1);
+	log.log('sending object [' + (Date.now() - res.startTime) + 'ms]', 1);
 	res.send(JSON.stringify(obj));
 }
 
 function retSendFile(res, path, options) {
-	log.log('sending file \'' + path + '\'', 1);
+	log.log('sending file \'' + path + '\' [' + (Date.now() - res.startTime) + 'ms]', 1);
 	res.sendFile(path, options);
 }
 
@@ -91,6 +108,12 @@ function allExistingIds(collection, ids, cb) {
 			cb(count == ids.length);
 		})
 	);
+}
+
+function validLanguageCode(langCode) {
+	if (langCode in langs)
+		return true;
+	return false;
 }
 
 function generateUniqueKey(collection, key_loc, cb) {
@@ -169,6 +192,7 @@ function parseQueryWithFiles(req, cb) {
 }
 
 module.exports = {
+	makeRoute:					makeRoute,
 	paramsPresent:				paramsPresent,
 	retError:					retError,
 	retBackError:				retBackError,

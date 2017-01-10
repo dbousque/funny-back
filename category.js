@@ -44,7 +44,9 @@ function removeCategoryFromContents(cat_id, contents) {
 			{
 				'content.categories': cat_id
 			}
-		}, throwErrors(function(numAffected) {
+		}, 
+		{multi: true},
+		throwErrors(function(numAffected) {
 			console.log('nb updated : ' + numAffected);
 		})
 	);

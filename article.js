@@ -12,12 +12,15 @@ var allExistingIds = utils.allExistingIds;
 var throwErrors = utils.throwErrors;
 var retError = utils.retError;
 var retOk = utils.retOk;
+var validLanguageCode = utils.validLanguageCode;
 
 function validAddArticleParams(params, cb)
 {
 	allExistingIds(ArticleCategory, params.categories, function(allExisting) {
 		if (!allExisting)
 			return cb(false, 'the id of a category sent is not valid');
+		if (!validLanguageCode(params.lang))
+			return cb(false, 'invalid language code : ' + params.lang);
 		cb(true, 'ok');
 	});
 }
@@ -34,6 +37,7 @@ function addArticle(res, params) {
 		article.content.description = params.description;
 		article.content.categories = params.categories.map(function(cat) { return ObjectId(cat) });
 		article.content.keywords = params.keywords;
+		article.content.lang = params.lang;
 		article.textContent = params.textContent;
 		if ('releaseDate' in params)
 			article.extra.releaseDate = params.releaseDate;

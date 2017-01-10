@@ -44,6 +44,7 @@ var videos = {
 			description: 'descr1',
 			keywords: ['danse', 'emeraude'],
 			key: 'aaaaaa',
+			lang: 'fr',
 			channel: channels[0].name
 		},
 		{
@@ -52,6 +53,7 @@ var videos = {
 			description: 'descr2',
 			keywords: ['foot', 'ruby'],
 			key: 'bbbbbb',
+			lang: 'fr',
 			channel: channels[1].name
 		},
 		{
@@ -60,6 +62,7 @@ var videos = {
 			description: 'descr3',
 			keywords: ['danse', 'diamant'],
 			key: 'cccccc',
+			lang: 'fr',
 			channel: channels[0].name
 		},
 		{
@@ -68,6 +71,7 @@ var videos = {
 			description: 'descr4',
 			keywords: ['danse', 'quartz'],
 			key: 'dddddd',
+			lang: 'fr',
 			channel: channels[1].name
 		}
 	],
@@ -78,6 +82,7 @@ var videos = {
 			description: 'descr5',
 			keywords: ['foot', 'opale'],
 			key: 'eeeeee',
+			lang: 'fr',
 			channel: channels[2].name
 		},
 		{
@@ -86,6 +91,7 @@ var videos = {
 			description: 'descr6',
 			keywords: ['philosophie', 'saphir'],
 			key: 'ffffff',
+			lang: 'fr',
 			channel: channels[0].name
 		}
 	],
@@ -96,6 +102,7 @@ var videos = {
 			description: 'descr7',
 			keywords: ['calisse', 'agate'],
 			key: 'gggggg',
+			lang: 'fr',
 			channel: channels[2].name
 		},
 		{
@@ -104,6 +111,7 @@ var videos = {
 			description: 'descr8',
 			keywords: ['char', 'jade'],
 			key: 'hhhhhh',
+			lang: 'fr',
 			channel: channels[0].name
 		},
 		{
@@ -112,6 +120,7 @@ var videos = {
 			description: 'descr9',
 			keywords: ['animaux', 'ambre'],
 			key: 'iiiiii',
+			lang: 'fr',
 			channel: channels[1].name
 		}
 	]
@@ -126,6 +135,7 @@ var articles = {
 			keywords: ['du brin', 'turquoise'],
 			textContent: articleText,
 			key: 'jjjjjj'
+			lang: 'fr',
 		},
 		{
 			name: 'Article2 - News',
@@ -134,6 +144,7 @@ var articles = {
 			keywords: ['ectoplasme', 'topaze'],
 			textContent: articleText,
 			key: 'kkkkkk'
+			lang: 'fr',
 		}
 	],
 	science: [
@@ -144,6 +155,7 @@ var articles = {
 			keywords: ['foot', 'morganite'],
 			textContent: articleText,
 			key: 'llllll'
+			lang: 'fr',
 		},
 		{
 			name: 'Article4 - Science',
@@ -152,6 +164,7 @@ var articles = {
 			keywords: ['games', 'grenat'],
 			textContent: articleText,
 			key: 'mmmmmm'
+			lang: 'fr',
 		},
 		{
 			name: 'Article5 - Science',
@@ -160,6 +173,7 @@ var articles = {
 			keywords: ['danse', 'nacre'],
 			textContent: articleText,
 			key: 'nnnnnn'
+			lang: 'fr',
 		},
 	]
 }
@@ -185,6 +199,7 @@ function populateArticles() {
 			obj.content.categories = [resArticleCategories[cat]];
 			obj.content.keywords = article.keywords;
 			obj.content.key = article.key;
+			obj.content.lang = article.lang;
 			obj.textContent = article.textContent;
 			obj = new Article(obj);
 			obj.save(function(err, doc) {
@@ -209,6 +224,7 @@ function populateVideos() {
 			obj.content.categories = [resVideoCategories[cat]];
 			obj.content.keywords = video.keywords;
 			obj.content.key = video.key;
+			obj.content.lang = video.lang;
 			obj.extra.channel = resChannels[video.channel];
 			obj = new Video(obj);
 			obj.save(function(err, doc) {

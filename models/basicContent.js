@@ -14,7 +14,8 @@ var basicContent = {
 	description:	{type: String, required: true},
 	categories:		{type: [ObjectId], required: false},
 	keywords:		{type: [String], required: false},
-	key:			{type: String, required: true, unique: true}
+	key:			{type: String, required: true, unique: true},
+	lang:			{type: String, required: true}
 };
 
 var basicExtra = {
