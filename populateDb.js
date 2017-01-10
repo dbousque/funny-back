@@ -134,8 +134,8 @@ var articles = {
 			description: 'descr1',
 			keywords: ['du brin', 'turquoise'],
 			textContent: articleText,
-			key: 'jjjjjj'
-			lang: 'fr',
+			key: 'jjjjjj',
+			lang: 'fr'
 		},
 		{
 			name: 'Article2 - News',
@@ -143,8 +143,8 @@ var articles = {
 			description: 'descr2',
 			keywords: ['ectoplasme', 'topaze'],
 			textContent: articleText,
-			key: 'kkkkkk'
-			lang: 'fr',
+			key: 'kkkkkk',
+			lang: 'fr'
 		}
 	],
 	science: [
@@ -154,8 +154,8 @@ var articles = {
 			description: 'descr3',
 			keywords: ['foot', 'morganite'],
 			textContent: articleText,
-			key: 'llllll'
-			lang: 'fr',
+			key: 'llllll',
+			lang: 'fr'
 		},
 		{
 			name: 'Article4 - Science',
@@ -163,8 +163,8 @@ var articles = {
 			description: 'descr4',
 			keywords: ['games', 'grenat'],
 			textContent: articleText,
-			key: 'mmmmmm'
-			lang: 'fr',
+			key: 'mmmmmm',
+			lang: 'fr'
 		},
 		{
 			name: 'Article5 - Science',
@@ -172,8 +172,8 @@ var articles = {
 			description: 'descr5',
 			keywords: ['danse', 'nacre'],
 			textContent: articleText,
-			key: 'nnnnnn'
-			lang: 'fr',
+			key: 'nnnnnn',
+			lang: 'fr'
 		},
 	]
 }
