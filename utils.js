@@ -13,8 +13,11 @@ function makeRoute(method, route, f) {
 		throw new Error('invalid method');
 	// to prevent express from catching errors
 	var tmp = function(req, res) {
+		if ('userid' in req.session)
+			res.userid = req.session.userid;
 		res.startTime = Date.now();
-		log.log('called route \'' + route + '\'');
+		res.route = route;
+		log.log('-> \'' + route + '\' : called');
 		setTimeout(function() { f(req, res) }, 0);
 	}
 	if (method === 'get')
@@ -67,18 +70,18 @@ function retBackError(res, err, stackOffset) {
 }
 
 function retOk(res) {
-	log.log('responding ok [' + (Date.now() - res.startTime) + 'ms]', 1);
+	log.log('<- \'' + res.route + '\' : responding ok [' + (Date.now() - res.startTime) + 'ms]', 1);
 	var toSend = {status: 'ok', msg: 'ok'};
 	res.send(JSON.stringify(toSend));
 }
 
 function retSendObject(res, obj) {
-	log.log('sending object [' + (Date.now() - res.startTime) + 'ms]', 1);
+	log.log('<- \'' + res.route + '\' : sending object [' + (Date.now() - res.startTime) + 'ms]', 1);
 	res.send(JSON.stringify(obj));
 }
 
 function retSendFile(res, path, options) {
-	log.log('sending file \'' + path + '\' [' + (Date.now() - res.startTime) + 'ms]', 1);
+	log.log('<- \'' + res.route + '\' : sending file \'' + path + '\' [' + (Date.now() - res.startTime) + 'ms]', 1);
 	res.sendFile(path, options);
 }
 

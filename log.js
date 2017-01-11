@@ -20,7 +20,7 @@ function makeDate() {
 }
 
 function getRaw(msg, type, stackOffset) {
-	var minStartLength = 110;
+	var minStartLength = 105;
 	var offset = 3;
 	if (stackOffset !== undefined)
 		offset += stackOffset;

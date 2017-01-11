@@ -12,6 +12,7 @@ var retError = utils.retError;
 var retOk = utils.retOk;
 var retSendFile = utils.retSendFile;
 var allExistingIds = utils.allExistingIds;
+var generateUniqueKey = utils.generateUniqueKey;
 
 function sendChannelCover(res, key) {
 	var file = 'content/channels/' + key;

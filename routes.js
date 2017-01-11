@@ -8,6 +8,7 @@ var video = require('./video.js');
 var article = require('./article.js');
 var channel = require('./channel.js');
 var userEvent = require('./userEvent.js');
+var user = require('./user.js');
 var Video = require('./models/video.js');
 var Article = require('./models/article.js');
 var Channel = require('./models/channel.js');
@@ -49,6 +50,7 @@ function getContentPage(res, params, collection, query, possibleSorts, options) 
 /* Categories */
 
 makeRoute('get', '/categories', function(req, res) {
+	console.log(req.session);
 	var params = req.query;
 	if (!paramsPresent(res, params, ['type']))
 		return ;
@@ -202,10 +204,24 @@ makeRoute('post', '/remove_channel', function(req, res) {
 /* UserEvents */
 
 makeRoute('post', '/register_event', function(req, res) {
+	if (!('userid' in res))
+		return retError(res, 'no userid, maybe the user disabled cookies');
 	var params = req.body;
 	if (!paramsPresent(res, params, ['event']))
 		return ;
 	if (params.event === null || typeof params.event !== 'object')
 		return retError(res, 'invalid event param');
 	userEvent.addUserEvent(res, params.event);
+});
+
+
+/* Users */
+
+makeRoute('post', '/create_user', function(req, res) {
+	if ('userid' in res)
+		return retError(res, '/create_user called but cookie already set, should not happen, id of user : ' + res.userid);
+	var params = req.body;
+	if (!paramsPresent(res, params, ['name', 'mail', 'age', 'sex']))
+		return ;
+	user.addUser(req, res, params);
 });
