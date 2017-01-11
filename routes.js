@@ -191,7 +191,7 @@ makeRoute('post', '/add_channel', function(req, res) {
 });
 
 makeRoute('get', '/remove_channel', function(req, res) {
-	var params = req.body;
+	var params = req.query;
 	if (!paramsPresent(res, params, ['id', 'removeOwnedVideos']))
 		return ;
 	if (params.removeOwnedVideos !== 'true' && params.removeOwnedVideos !== 'false')
