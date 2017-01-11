@@ -50,7 +50,6 @@ function getContentPage(res, params, collection, query, possibleSorts, options) 
 /* Categories */
 
 makeRoute('get', '/categories', function(req, res) {
-	console.log(req.session);
 	var params = req.query;
 	if (!paramsPresent(res, params, ['type']))
 		return ;

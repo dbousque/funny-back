@@ -211,5 +211,6 @@ module.exports = {
 	moveFileAt:					moveFileAt,
 	getPage:					getPage,
 	makeListToFrontFormat:		makeListToFrontFormat,
-	parseQueryWithFiles:		parseQueryWithFiles
+	parseQueryWithFiles:		parseQueryWithFiles,
+	validLanguageCode:			validLanguageCode
 }
