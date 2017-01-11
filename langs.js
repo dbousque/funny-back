@@ -187,6 +187,4 @@ var langs = {
 	zu:		'Zulu'
 }
 
-module.exports = {
-	langs:	langs
-}
+module.exports = langs;

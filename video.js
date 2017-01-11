@@ -6,8 +6,7 @@ var Channel = require('./models/channel.js');
 var utils = require('./utils.js');
 var log = require('./log.js');
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var ObjectId = Schema.Types.ObjectId;
+var ObjectId = mongoose.Types.ObjectId;
 
 var generateUniqueKey = utils.generateUniqueKey;
 var allExistingIds = utils.allExistingIds;
@@ -53,6 +52,7 @@ function validAddVideoParams(params, cb) {
 }
 
 function videoFromParams(params) {
+	console.log(params);
 	var video = {};
 	video.content = {};
 	video.extra = {};

@@ -46,13 +46,11 @@ function removeCategoryFromContents(cat_id, contents) {
 			}
 		}, 
 		{multi: true},
-		throwErrors(function(numAffected) {
-			console.log('nb updated : ' + numAffected);
-		})
+		throwErrors
 	);
 }
 
-function removeCategory(res, type, id) {
+function removeCategory(res, type, id, cb) {
 	if (!(type in contentTypes))
 		return retError(res, 'unknown type');
 	var categoryType = contentTypes[type].cat;
@@ -65,7 +63,9 @@ function removeCategory(res, type, id) {
 				return retError(res, 'no such category');
 			removeCategoryFromContents(category.id, contents);
 			category.remove(throwErrors);
-			retOk(res);
+			if (cb === undefined)
+				return retOk(res);
+			cb();
 		})
 	);
 }

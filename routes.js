@@ -16,6 +16,7 @@ var utils = require('./utils.js');
 
 var paramsPresent = utils.paramsPresent;
 var retError = utils.retError;
+var throwErrors = utils.throwErrors;
 var getPage = utils.getPage;
 var parseQueryWithFiles = utils.parseQueryWithFiles;
 var makeRoute = utils.makeRoute;
@@ -67,7 +68,22 @@ makeRoute('get', '/remove_category', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['id', 'type']))
 		return ;
-	category.removeCategory(res, params.type, params.id);
+	// temporary, must refactor, routes.js should not have logic code
+	category.removeCategory(res, params.type, params.id, function() {
+		Channel.update(
+			{
+				'categories': params.id
+			},
+			{
+				$pull:
+				{
+					'categories': params.id
+				}
+			}, 
+			{multi: true},
+			throwErrors
+		);
+	});
 });
 
 makeRoute('post', '/change_category_name', function(req, res) {
@@ -166,11 +182,11 @@ makeRoute('get', '/remove_article', function(req, res) {
 
 /* Channels */
 
-makeRoute('get', '/channel_cover', function(req, res) {
+makeRoute('get', '/channel_thumbnail', function(req, res) {
 	var params = req.query;
 	if (!paramsPresent(res, params, ['k']))
 		return ;
-	channel.sendChannelCover(res, params.k);
+	channel.sendChannelThumbnail(res, params.k);
 });
 
 makeRoute('post', '/channels', function(req, res) {

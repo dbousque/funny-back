@@ -17,7 +17,7 @@ function makeRoute(method, route, f) {
 			res.userid = req.session.userid;
 		res.startTime = Date.now();
 		res.route = route;
-		log.log('-> \'' + route + '\' : called');
+		log.log('-> \'' + route + '\'');
 		setTimeout(function() { f(req, res) }, 0);
 	}
 	if (method === 'get')

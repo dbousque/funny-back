@@ -4,8 +4,7 @@ var Article = require('./models/article.js');
 var ArticleCategory = require('./models/articleCategory.js');
 var utils = require('./utils.js');
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var ObjectId = Schema.Types.ObjectId;
+var ObjectId = mongoose.Types.ObjectId;
 
 var generateUniqueKey = utils.generateUniqueKey;
 var allExistingIds = utils.allExistingIds;

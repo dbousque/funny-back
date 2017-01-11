@@ -13,12 +13,14 @@ var retOk = utils.retOk;
 var retSendFile = utils.retSendFile;
 var allExistingIds = utils.allExistingIds;
 var generateUniqueKey = utils.generateUniqueKey;
+var moveFileAt = utils.moveFileAt;
+var retBackErrorAndRemoveFiles = utils.retBackErrorAndRemoveFiles;
 
-function sendChannelCover(res, key) {
-	var file = 'content/channels/' + key;
+function sendChannelThumbnail(res, key) {
+	var file = 'content/channel_thumbnails/' + key;
 	fs.stat(file, function(err, stat) {
 		if (err)
-			file = 'content/std_channel_cover';
+			file = 'content/std_channel_thumbnail';
 		retSendFile(res, file, {root: __dirname});
 	});
 }
@@ -35,14 +37,14 @@ function addChannel(res, name, categories, files) {
 			};
 			channel = new Channel(channel);
 			channel.save(throwErrors(function(channel) {
-				if (files.cover === undefined)
+				if (files.thumbnail === undefined)
 					return retOk(res);
-				var channel_cover_dir = __dirname + '/content/channels';
-				moveFileAt(files.cover, channel_cover_dir, key, function(error, err) {
+				var channel_thumbnail_dir = __dirname + '/content/channel_thumbnails';
+				moveFileAt(files.thumbnail, channel_thumbnail_dir, key, function(error, err) {
 					if (error)
 					{
 						channel.remove(throwErrors);
-						return retBackErrorAndRemoveFiles(res, 'could not move cover', files);
+						return retBackErrorAndRemoveFiles(res, 'could not move thumbnail', files);
 					}
 					retOk(res);
 				});
@@ -81,7 +83,7 @@ function removeChannel(res, id, removeOwnedVideos) {
 }
 
 module.exports = {
-	sendChannelCover:	sendChannelCover,
+	sendChannelThumbnail:	sendChannelThumbnail,
 	addChannel:			addChannel,
 	removeChannel:		removeChannel
 }

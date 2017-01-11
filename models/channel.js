@@ -19,7 +19,7 @@ Channel.toFrontFormat = function(obj, options, cb) {
 	res.id = obj._id;
 	res.name = obj.name;
 	res.categories = obj.categories;
-	res.cover = '/channel_cover?k=' + obj.key;
+	res.thumbnail = '/channel_thumbnail?k=' + obj.key;
 	cb(null, res);
 }
 
