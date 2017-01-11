@@ -190,12 +190,13 @@ makeRoute('post', '/add_channel', function(req, res) {
 	});
 });
 
-makeRoute('post', '/remove_channel', function(req, res) {
+makeRoute('get', '/remove_channel', function(req, res) {
 	var params = req.body;
 	if (!paramsPresent(res, params, ['id', 'removeOwnedVideos']))
 		return ;
-	if (params.removeOwnedVideos !== true && params.removeOwnedVideos !== false)
+	if (params.removeOwnedVideos !== 'true' && params.removeOwnedVideos !== 'false')
 		return retError(res, 'invalid boolean value for removeOwnedVideos');
+	params.removeOwnedVideos = (params.removeOwnedVideos === 'true');
 	channel.removeChannel(res, params.id, params.removeOwnedVideos);
 });
 
