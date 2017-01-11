@@ -225,3 +225,7 @@ makeRoute('post', '/create_user', function(req, res) {
 		return ;
 	user.addUser(req, res, params);
 });
+
+makeRoute('get', '/is_existing_user', function(req, res) {
+	user.isExistingUser(req, res);
+});

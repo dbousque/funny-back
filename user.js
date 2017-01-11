@@ -4,6 +4,7 @@ var User = require('./models/user.js');
 var utils = require('./utils.js');
 
 var retError = utils.retError;
+var retSendObject = utils.retSendObject;
 var throwErrors = utils.throwErrors;
 
 function addUser(req, res, params) {
@@ -24,6 +25,20 @@ function addUser(req, res, params) {
 	});
 }
 
+function isExistingUser(req, res) {
+	if (!('userid' in res))
+		return retSendObject(res, {existing: false});
+	User.findOne({_id: res.userid}, throwErrors(function(user) {
+		if (!user)
+		{
+			req.session.destroy();
+			return retSendObject(res, {existing: false});
+		}
+		retSendObject(res, {existing: true});
+	}));
+}
+
 module.exports = {
-	addUser:	addUser
+	addUser:		addUser,
+	isExistingUser:	isExistingUser
 }
